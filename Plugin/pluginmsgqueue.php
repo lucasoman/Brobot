@@ -24,7 +24,7 @@ class PluginMsgQueue extends \Brobot\Plugin {
 		$this->_lastTime = $now;
 		$msgs = $this->getMessages();
 		foreach ($msgs as $m) {
-			$message = substr(str_replace("\n",' ',$m['message']),0,self::MESSAGE_MAXLEN);
+			$message = substr(str_replace("\n",' ',$m['command']),0,self::MESSAGE_MAXLEN);
 			$bot->send($message);
 		}
 		$this->setSent($msgs);
@@ -33,7 +33,7 @@ class PluginMsgQueue extends \Brobot\Plugin {
 	protected function getMessages() {
 		$msgs = array();
 		if ($db = $this->getDb()) {
-			$query = "select * from botMsgQueue where sent=0 and messageTime > CURRENT_TIMESTAMP - interval ".self::MESSAGE_HOURS." hour order by messageTime limit ".self::MESSAGE_BATCH;
+			$query = "select * from botCmdQueue commandTime > CURRENT_TIMESTAMP - interval ".self::MESSAGE_HOURS." hour order by commandTime limit ".self::MESSAGE_BATCH;
 			if ($result = $db->query($query)) {
 				while ($row = $result->fetch_assoc()) {
 					$msgs[] = $row;
@@ -47,10 +47,10 @@ class PluginMsgQueue extends \Brobot\Plugin {
 		if ($db = $this->getDb()) {
 			$ids = array();
 			foreach ($msgs as $m) {
-				$ids[] = $m['botMsgQueueId'];
+				$ids[] = $m['id'];
 			}
 			if (!empty($ids)) {
-				$query = "update botMsgQueue set sent=1 where botMsgQueueId in (".implode(',',$ids).")";
+				$query = "delete from botCmdQueue where id in (".implode(',',$ids).")";
 				$db->query($query);
 			}
 		}
@@ -63,10 +63,10 @@ class PluginMsgQueue extends \Brobot\Plugin {
 	public function queueMessage($message) {
 		$db = Db::getInstance();
 		$query = "
-			INSERT INTO botMsgQueue
+			INSERT INTO botCmdQueue
 			SET
-				message='".$db->real_escape_string($message)."',
-				messageTime=NOW()
+				command='".$db->real_escape_string($message)."',
+				commandTime=NOW()
 			";
 		$db->query($query);
 	}

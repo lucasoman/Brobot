@@ -38,16 +38,22 @@ class Brobot {
 		$this->loadAllPlugins();
 		$this->loadAllHandlers();
 		$this->loadAllIrcCommands();
+		$this->loadAllIrcMessages();
 	}
 
 	public function loadConfig() {
 		$config = require(self::CONFIG_FILE);
 		$this->setConfig($config['servers'][$this->_index]);
+
 		$this->_handlerDir = $config['runtime']['handler_dir'];
 		$this->_pluginDir = $config['runtime']['plugin_dir'];
 		$this->_irccommandDir = $config['runtime']['irccommand_dir'];
+		$this->_ircmessageDir = $config['runtime']['ircmessage_dir'];
+
 		$this->_commandChar = $config['runtime']['command_char'];
 		$this->_logFile = $config['runtime']['log_file'];
+
+		Db::setConfig($config['database']);
 	}
 
 	public function go() {
@@ -175,38 +181,30 @@ class Brobot {
 	}
 
 	protected function loadAllPlugins() {
-		$d = dir($this->_pluginDir);
-		while ($file = $d->read()) {
-			if (is_file($this->_pluginDir.$file)) {
-				require_once($this->_pluginDir.$file);
-				$classname = preg_replace('/\.php$/','',$file);
-				if (class_exists($classname)) {
-					$this->_plugins[] = new $classname($this);
-				}
-			}
-		}
-		$d->close();
+		$this->loadAll($this->_pluginDir,function ($cn,$bot) { $this->_plugins[] = new $cn($bot); });
 	}
 
 	protected function loadAllHandlers() {
-		$d = dir($this->_handlerDir);
-		while ($file = $d->read()) {
-			if (is_file($this->_handlerDir.$file)) {
-				require_once($this->_handlerDir.$file);
-				$classname = preg_replace('/\.php$/','',$file);
-				if (class_exists($classname)) {
-					$this->_handlers[] = new $classname($this);
-				}
-			}
-		}
-		$d->close();
+		$this->loadAll($this->_handlerDir,function ($cn,$bot) { $this->_handlers[] = new $cn($bot); });
 	}
 
 	protected function loadAllIrcCommands() {
-		$d = dir($this->_irccommandDir);
+		$this->loadAll($this->_irccommandDir);
+	}
+
+	protected function loadAllIrcMessages() {
+		$this->loadAll($this->_ircmessageDir);
+	}
+
+	protected function loadAll($dir,$callBack=NULL) {
+		$d = dir($dir);
 		while ($file = $d->read()) {
-			if (is_file($this->_irccommandDir.$file)) {
-				require_once($this->_irccommandDir.$file);
+			if (is_file($dir.$file)) {
+				require_once($dir.$file);
+				$classname = preg_replace('/\.php$/','',$file);
+				if (class_exists($classname) && is_callable($callBback)) {
+					$callBack($classname,$this);
+				}
 			}
 		}
 		$d->close();
