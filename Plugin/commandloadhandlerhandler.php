@@ -1,6 +1,6 @@
 <?php
 
-namespace Brobot\Handler;
+namespace Brobot\Plugin;
 
 class CommandLoadHandlerHandler extends \Brobot\Handler {
 	public function handle($parts) {

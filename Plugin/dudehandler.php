@@ -1,6 +1,6 @@
 <?php
 
-namespace Brobot\Handler;
+namespace Brobot\Plugin;
 
 class DudeHandler extends \Brobot\Handler {
 	public function handle($parts) {

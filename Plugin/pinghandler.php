@@ -1,6 +1,6 @@
 <?php
 
-namespace Brobot\Handler;
+namespace Brobot\Plugin;
 
 use Brobot\Plugin\PlugintimeoutCheck;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Brobot\Handler;
+namespace Brobot\Plugin;
 
 class CommandFistbumpHandler extends \Brobot\Handler {
 	public function handle($parts) {
