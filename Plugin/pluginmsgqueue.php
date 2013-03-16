@@ -2,6 +2,8 @@
 
 namespace Brobot\Plugin;
 
+use Brobot;
+
 class PluginMsgQueue extends \Brobot\Plugin {
 	const MESSAGE_SECONDS = 5;
 	const MESSAGE_BATCH = 3;
@@ -33,8 +35,14 @@ class PluginMsgQueue extends \Brobot\Plugin {
 	protected function getMessages() {
 		$msgs = array();
 		if ($db = $this->getDb()) {
-			$query = "select * from botCmdQueue commandTime > CURRENT_TIMESTAMP - interval ".self::MESSAGE_HOURS." hour order by commandTime limit ".self::MESSAGE_BATCH;
-			if ($result = $db->query($query)) {
+			$query = "
+				select *
+				from botCmdQueue
+				where commandDate > CURRENT_TIMESTAMP - interval ".self::MESSAGE_HOURS." hour
+				order by commandDate limit ".self::MESSAGE_BATCH
+				;
+			$result = $db->query($query);
+			if ($result) {
 				while ($row = $result->fetch_assoc()) {
 					$msgs[] = $row;
 				}
@@ -57,18 +65,19 @@ class PluginMsgQueue extends \Brobot\Plugin {
 	}
 
 	protected function getDb() {
-		return Db::getInstance();
+		return Brobot\Db::getInstance();
 	}
 
 	public function queueMessage($message) {
-		$db = Db::getInstance();
+		$db = Brobot\Db::getInstance();
 		$query = "
 			INSERT INTO botCmdQueue
 			SET
 				command='".$db->real_escape_string($message)."',
-				commandTime=NOW()
+				commandDate=NOW()
 			";
 		$db->query($query);
+		echo $db->error;
 	}
 }
 

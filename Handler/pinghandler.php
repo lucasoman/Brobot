@@ -2,6 +2,8 @@
 
 namespace Brobot\Handler;
 
+use Brobot\Plugin\PlugintimeoutCheck;
+
 class PingHandler extends \Brobot\Handler {
 	public function handle($parts) {
 		if ($parts[0] == 'PING') {

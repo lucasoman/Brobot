@@ -1,10 +1,10 @@
 <?php
 
 namespace Brobot;
-use Handler;
-use Plugin;
-use IrcCommand;
-use IrcMessage;
+use Brobot\Handler;
+use Brobot\Plugin;
+use Brobot\IrcCommand;
+use Brobot\IrcMessage;
 
 require('db.php');
 require('handler.php');
@@ -66,13 +66,14 @@ class Brobot {
 
 	public function autoJoin() {
 		foreach ($this->getConfig('channels') as $c) {
-			$obj = new IrcJoin($c);
+			$obj = new IrcCommand\IrcJoin($c);
 			$this->queue((string)$obj);
 		}
 	}
 
 	public function addPlugin($plugin) {
 		$classFile = $this->_pluginDir.$plugin.'.php';
+		$plugin = 'Brobot\\Plugin\\'.$plugin;
 		if (file_exists($classFile)) {
 			include_once($classFile);
 			if (class_exists($plugin)) {
@@ -85,6 +86,7 @@ class Brobot {
 
 	public function addHandler($handler) {
 		$classFile = $this->_handlerDir.$handler.'.php';
+		$handler = 'Brobot\\Handler\\'.$handler;
 		if (file_exists($classFile)) {
 			include_once($classFile);
 			if (class_exists($handler)) {
@@ -127,19 +129,19 @@ class Brobot {
 	}
 
 	public function queue($msg) {
-		PluginMsgQueue::queueMessage($msg);
+		Plugin\PluginMsgQueue::queueMessage($msg);
 	}
 
 	public function sendMessage($message,$channel=null) {
 		if (empty($channel)) {
 			$channel = $this->getChannel();
 		}
-		$obj = new IrcPrivmsg('#'.$channel,$message);
+		$obj = new IrcCommand\IrcPrivmsg('#'.$channel,$message);
 		$this->queue((string)$obj);
 	}
 
 	public function sendPrivateMessage($message,$nick) {
-		$obj = new IrcPrivmsg($nick,$message);
+		$obj = new IrcCommand\IrcPrivmsg($nick,$message);
 		$this->queue((string)$obj);
 	}
 
@@ -181,11 +183,11 @@ class Brobot {
 	}
 
 	protected function loadAllPlugins() {
-		$this->loadAll($this->_pluginDir,function ($cn,$bot) { $this->_plugins[] = new $cn($bot); });
+		$this->loadAll($this->_pluginDir,function ($cn,$bot) { $bot->addPlugin($cn); });
 	}
 
 	protected function loadAllHandlers() {
-		$this->loadAll($this->_handlerDir,function ($cn,$bot) { $this->_handlers[] = new $cn($bot); });
+		$this->loadAll($this->_handlerDir,function ($cn,$bot) { $bot->addHandler($cn); });
 	}
 
 	protected function loadAllIrcCommands() {
@@ -202,7 +204,7 @@ class Brobot {
 			if (is_file($dir.$file)) {
 				require_once($dir.$file);
 				$classname = preg_replace('/\.php$/','',$file);
-				if (class_exists($classname) && is_callable($callBback)) {
+				if (!is_null($callBack)) {
 					$callBack($classname,$this);
 				}
 			}
