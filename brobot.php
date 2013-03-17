@@ -1,7 +1,6 @@
 <?php
 
 namespace Brobot;
-use Brobot\Handler;
 use Brobot\Plugin;
 use Brobot\IrcCommand;
 use Brobot\IrcMessage;
@@ -36,7 +35,6 @@ class Brobot {
 
 		$this->loadConfig();
 		$this->loadAllPlugins();
-		$this->loadAllHandlers();
 		$this->loadAllIrcCommands();
 		$this->loadAllIrcMessages();
 	}
@@ -84,39 +82,11 @@ class Brobot {
 		return FALSE;
 	}
 
-	public function addHandler($handler) {
-		$classFile = $this->_handlerDir.$handler.'.php';
-		$handler = 'Brobot\\Handler\\'.$handler;
-		if (file_exists($classFile)) {
-			include_once($classFile);
-			if (class_exists($handler)) {
-				$this->_handlers[] = new $handler($this);
-				return TRUE;
-			}
-		}
-		return FALSE;
-	}
-
-	public function getHandlers() {
-		return $this->_handlers;
-	}
-
 	public function delPlugin($name) {
 		$name = strtolower($name);
 		foreach ($this->_plugins as $i=>$p) {
 			if (strtolower(get_class($p)) == $name) {
 				unset($this->_plugins[$i]);
-				return TRUE;
-			}
-		}
-		return FALSE;
-	}
-
-	public function delHandler($name) {
-		$name = strtolower($name);
-		foreach ($this->_handlers as $i=>$h) {
-			if (strtolower(get_class($h)) == $name) {
-				unset($this->_handlers[$i]);
 				return TRUE;
 			}
 		}
@@ -186,10 +156,6 @@ class Brobot {
 		$this->loadAll($this->_pluginDir,function ($cn,$bot) { $bot->addPlugin($cn); });
 	}
 
-	protected function loadAllHandlers() {
-		$this->loadAll($this->_handlerDir,function ($cn,$bot) { $bot->addHandler($cn); });
-	}
-
 	protected function loadAllIrcCommands() {
 		$this->loadAll($this->_irccommandDir);
 	}
@@ -245,9 +211,9 @@ class Brobot {
 
 	protected function handle($message) {
 		$this->console($message);
-		$parts = explode(' ',trim($message));
-		foreach ($this->_handlers as $handler) {
-			$handler->handle($parts);
+		$mObj = IrcMessage::getInstance($message);
+		foreach ($this->_plugins as $plugin) {
+			$mObj->handle($plugin);
 		}
 	}
 
