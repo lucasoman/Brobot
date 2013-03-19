@@ -16,7 +16,7 @@ class TimeoutCheck extends \Brobot\Plugin {
 	}
 
 	public function onConnect() {
-		self::setLastPing(time());
+		self::setLastPing($this->getCurrentTime());
 	}
 
 	public function onDisconnect() {
@@ -24,7 +24,7 @@ class TimeoutCheck extends \Brobot\Plugin {
 	}
 
 	public function execute() {
-		if (self::$_lastPing !== NULL && (time() - self::$_lastPing) >= self::TIMEOUT) {
+		if (self::$_lastPing !== NULL && ($this->getCurrentTime() - self::$_lastPing) >= self::TIMEOUT) {
 			throw new ConnectionException('Ping timeout.');
 		}
 	}

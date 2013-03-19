@@ -19,7 +19,7 @@ class MsgQueue extends \Brobot\Plugin {
 
 	public function execute() {
 		$bot = $this->_bot;
-		$now = time();
+		$now = $this->getCurrentTime();
 		if ($this->_lastTime > ($now - self::MESSAGE_SECONDS)) {
 			return;
 		}

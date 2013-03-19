@@ -17,7 +17,6 @@ class Brobot {
 	protected $_config;
 	protected $_socket;
 	protected $_plugins;
-	protected $_handlers;
 	protected $_index;
 
 	// config stuff
@@ -90,6 +89,10 @@ class Brobot {
 			}
 		}
 		return FALSE;
+	}
+
+	public function getPlugins() {
+		return $this->_plugins;
 	}
 
 	public function send($msg) {
@@ -245,6 +248,7 @@ class Brobot {
 	}
 
 	protected function executePlugins() {
+		Plugin::setCurrentTime(time());
 		foreach ($this->_plugins as $p) {
 			$p->execute();
 		}
