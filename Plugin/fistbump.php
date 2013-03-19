@@ -2,10 +2,10 @@
 
 namespace Brobot\Plugin;
 
-class CommandFistbumpHandler extends \Brobot\Handler {
-	public function handle($parts) {
-		if ($parts[1] == 'PRIVMSG' && $this->isCommand('fistbump',$parts[3])) {
-			$this->reply($parts,'Yeah man.');
+class Fistbump extends \Brobot\Plugin {
+	public function onPrivmsg($message) {
+		if ($this->isCommand('fistbump',$message->getMessage())) {
+			$this->reply($message,'Yeah man.');
 		}
 	}
 

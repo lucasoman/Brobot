@@ -6,7 +6,6 @@ use Brobot\IrcCommand;
 use Brobot\IrcMessage;
 
 require('db.php');
-require('handler.php');
 require('plugin.php');
 require('irccommand.php');
 require('ircmessage.php');
@@ -99,7 +98,7 @@ class Brobot {
 	}
 
 	public function queue($msg) {
-		Plugin\PluginMsgQueue::queueMessage($msg);
+		Plugin\MsgQueue::queueMessage($msg);
 	}
 
 	public function sendMessage($message,$channel=null) {

@@ -47,19 +47,17 @@ class Plugin {
 	}
 
 	protected function isCommand($command,$string) {
-		if (preg_match('/^:?'.$this->getBot()->getCommandChar().$command.'$/',$string)) {
+		if (preg_match('/^:?'.$this->getBot()->getCommandChar().$command.'(\s.*)?$/',$string)) {
 			return TRUE;
 		}
 		return FALSE;
 	}
 
-	protected function reply($parts,$message) {
-		if (substr($parts[2],0,1) == '#') {
-			$this->getBot()->sendPrivateMessage($message,$parts[2]);
+	protected function reply($message,$toSend) {
+		if ($message->getDestinationType() == IrcMessage\Privmsg::DEST_TYPE_CHANNEL) {
+			$this->getBot()->sendPrivateMessage($toSend,$message->getDestination());
 		} else {
-			$addyParts = $this->getSenderParts($parts[0]);
-			$nick = $addyParts[0];
-			$this->getBot()->sendPrivateMessage($message,$nick);
+			$this->getBot()->sendPrivateMessage($toSend,$message->getSenderNick());
 		}
 	}
 

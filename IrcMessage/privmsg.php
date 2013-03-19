@@ -9,6 +9,10 @@ class Privmsg extends \Brobot\IrcMessage {
 	protected $_destinationType;
 	protected $_destination;
 	protected $_message;
+	protected static $_channelChars = array(
+			'#'=>TRUE,
+			'&'=>TRUE,
+			);
 
 	public function __construct($msg) {
 		// :lucas!lucas@pN-5i9.no9.lf9tsd.IP PRIVMSG #brobottest :!fistbump
@@ -18,10 +22,7 @@ class Privmsg extends \Brobot\IrcMessage {
 		$this->_message = $matches[3];
 		$this->populateSenderParts();
 
-		$channelChars = array('#','&');
-		array_flip($channelChars);
-
-		if (isset($channelChars[substr($this->_destination,0,1)])) {
+		if (isset(self::$_channelChars[substr($this->_destination,0,1)])) {
 			$this->_destinationType = self::DEST_TYPE_CHANNEL;
 		} else {
 			$this->_destinationType = self::DEST_TYPE_USER;

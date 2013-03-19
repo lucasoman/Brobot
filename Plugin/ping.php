@@ -4,17 +4,14 @@ namespace Brobot\Plugin;
 
 use Brobot\Plugin\PlugintimeoutCheck;
 
-class PingHandler extends \Brobot\Handler {
-	public function handle($parts) {
-		if ($parts[0] == 'PING') {
-			array_shift($parts);
-			$this->getBot()->send('PONG '.implode(' ',$parts));
-			PluginTimeoutCheck::setLastPing(time());
-			return TRUE;
-		} else {
-			PluginTimeoutCheck::setLastPing(time());
-		}
-		return FALSE;
+class Ping extends \Brobot\Plugin {
+	public function onPing($message) {
+		$this->getBot()->send('PONG '.$message->getMessage());
+		TimeoutCheck::setLastPing(time());
+	}
+
+	public function onPrivmsg($message) {
+		TimeoutCheck::setLastPing(time());
 	}
 }
 

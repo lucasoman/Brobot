@@ -2,9 +2,9 @@
 
 namespace Brobot\Plugin;
 
-class CommandAutoJoinHandler extends \Brobot\Handler {
-	public function handle($parts) {
-		if ($parts[1] == 'PRIVMSG' && $this->isCommand('autojoin',$parts[3])) {
+class Autojoin extends \Brobot\Plugin {
+	public function onPrivmsg($message) {
+		if ($this->isCommand('autojoin',$message->getMessage())) {
 			$brobot = $this->getBot();
 			$brobot->autoJoin();
 		}

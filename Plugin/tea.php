@@ -2,10 +2,10 @@
 
 namespace Brobot\Plugin;
 
-class CommandTeaHandler extends \Brobot\Handler {
-	public function handle($parts) {
-		if ($parts[1] == 'PRIVMSG' && $this->isCommand('tea',$parts[3])) {
-			$this->reply($parts,'One lump or two?');
+class Tea extends \Brobot\Plugin {
+	public function onPrivmsg($message) {
+		if ($this->isCommand('tea',$message->getMessage())) {
+			$this->reply($message,'One lump or two?');
 		}
 	}
 

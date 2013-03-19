@@ -2,7 +2,7 @@
 
 namespace Brobot\Plugin;
 
-class PluginTimeoutCheck extends \Brobot\Plugin {
+class TimeoutCheck extends \Brobot\Plugin {
 	const TIMEOUT = 360;
 
 	protected static $_lastPing = NULL;

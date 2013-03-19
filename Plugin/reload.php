@@ -2,12 +2,12 @@
 
 namespace Brobot\Plugin;
 
-class CommandReloadHandler extends \Brobot\Handler {
-	public function handle($parts) {
-		if ($parts[1] == 'PRIVMSG' && $this->isCommand('reload',$parts[3])) {
+class Reload extends \Brobot\Plugin {
+	public function onPrivmsg($message) {
+		if ($this->isCommand('reload',$message->getMessage())) {
 			$brobot = $this->getBot();
 			$brobot->loadConfig();
-			$this->reply($parts,'Reloaded config.');
+			$this->reply($message,'Reloaded config.');
 		}
 	}
 

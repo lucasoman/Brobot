@@ -2,18 +2,18 @@
 
 namespace Brobot\Plugin;
 
-class CommandHelpHandler extends \Brobot\Handler {
-	public function handle($parts) {
-		if ($parts[1] == 'PRIVMSG' && $this->isCommand('help',$parts[3])) {
-			$this->sendHelp($parts);
+class Help extends \Brobot\Plugin {
+	public function onPrivmsg($message) {
+		if ($this->isCommand('help',$message->getMessage())) {
+			$this->sendHelp($message);
 		}
 	}
 
-	private function sendHelp($parts) {
-		$handlers = $this->getBot()->getHandlers();
-		foreach ($handlers as $h) {
-			if (($msg = $h->getHelp()) !== NULL) {
-				$this->reply($parts,$msg);
+	private function sendHelp($message) {
+		$plugins = $this->getBot()->getPlugins();
+		foreach ($plugins as $p) {
+			if (($msg = $p->getHelp()) !== NULL) {
+				$this->reply($message,$msg);
 			}
 		}
 	}

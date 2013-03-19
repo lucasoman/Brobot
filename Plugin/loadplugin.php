@@ -2,23 +2,25 @@
 
 namespace Brobot\Plugin;
 
-class CommandLoadPluginHandler extends \Brobot\Handler {
-	public function handle($parts) {
-		if ($parts[1] == 'PRIVMSG' && $this->isCommand('loadplugin',$parts[3])) {
+class LoadPlugin extends \Brobot\Plugin {
+	public function onPrivmsg($message) {
+		$messageString = $message->getMessage();
+		$parts = explode(' ',$messageString);
+		if ($this->isCommand('loadplugin',$messageString)) {
 			$brobot = $this->getBot();
-			$classname = strtolower($parts[4]);
+			$classname = strtolower($parts[1]);
 			if ($brobot->addPlugin($classname)) {
-				$this->reply($parts,'Loaded '.$classname.' plugin.');
+				$this->reply($message,'Loaded '.$classname.' plugin.');
 			} else {
-				$this->reply($parts,'Unable to load '.$classname.' plugin.');
+				$this->reply($message,'Unable to load '.$classname.' plugin.');
 			}
-		} elseif ($parts[1] == 'PRIVMSG' && $this->isCommand('unloadplugin',$parts[3])) {
+		} elseif ($this->isCommand('unloadplugin',$messageString)) {
 			$brobot = $this->getBot();
-			$classname = strtolower($parts[4]);
+			$classname = strtolower($parts[1]);
 			if ($brobot->delPlugin($classname)) {
-				$this->reply($parts,'Unloaded '.$classname.' plugin.');
+				$this->reply($message,'Unloaded '.$classname.' plugin.');
 			} else {
-				$this->reply($parts,'Unable to unload '.$classname.' plugin.');
+				$this->reply($message,'Unable to unload '.$classname.' plugin.');
 			}
 		}
 	}

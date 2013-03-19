@@ -10,14 +10,18 @@ abstract class IrcMessage {
 	protected $_senderUser;
 	protected $_senderAddress;
 
-	public function handle($plugin);
+	abstract public function handle($plugin);
 
 	public function getInstance($msg) {
 		$parts = explode(' ',$msg);
-		if ($parts[1]) == 'PRIVMSG') {
-			return new Brobot\IrcMessage\Privmsg($msg);
+		if ($parts[1] == 'PRIVMSG') {
+			return new IrcMessage\Privmsg($msg);
+		} elseif ($parts[0] == 'PING') {
+			return new IrcMessage\Ping($msg);
+		} elseif (is_numeric($parts[1])) {
+			return new IrcMessage\Raw($msg);
 		} else {
-			return new Brobot\IrcMessage\Unknown($msg);
+			return new IrcMessage\Unknown($msg);
 		}
 	}
 

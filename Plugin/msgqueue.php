@@ -4,7 +4,7 @@ namespace Brobot\Plugin;
 
 use Brobot;
 
-class PluginMsgQueue extends \Brobot\Plugin {
+class MsgQueue extends \Brobot\Plugin {
 	const MESSAGE_SECONDS = 5;
 	const MESSAGE_BATCH = 3;
 	const MESSAGE_HOURS = 2;
