@@ -3,8 +3,6 @@
 namespace Brobot\Plugin;
 
 class TimeoutCheck extends \Brobot\Plugin {
-	const TIMEOUT = 360;
-
 	protected static $_lastPing = NULL;
 
 	public function __construct() {
@@ -24,8 +22,8 @@ class TimeoutCheck extends \Brobot\Plugin {
 	}
 
 	public function execute() {
-		if (self::$_lastPing !== NULL && ($this->getCurrentTime() - self::$_lastPing) >= self::TIMEOUT) {
-			throw new ConnectionException('Ping timeout.');
+		if (self::$_lastPing !== NULL && ($this->getCurrentTime() - self::$_lastPing) >= $this->getOption('timeout')) {
+			throw new \Brobot\ConnectionException('Ping timeout.');
 		}
 	}
 }

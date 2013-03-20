@@ -4,6 +4,7 @@ namespace Brobot;
 
 class Plugin {
 	protected $_bot;
+	protected $_options;
 	protected static $_currentTime;
 
 	public function __construct($bot) {
@@ -72,6 +73,18 @@ class Plugin {
 
 	public function getCurrentTime() {
 		return self::$_currentTime;
+	}
+
+	public function setOptions($options) {
+		$this->_options = $options;
+	}
+
+	protected function getOption($name) {
+		if (isset($this->_options[$name])) {
+			return $this->_options[$name];
+		} else {
+			return NULL;
+		}
 	}
 }
 

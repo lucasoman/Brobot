@@ -5,11 +5,6 @@ namespace Brobot\Plugin;
 use Brobot;
 
 class MsgQueue extends \Brobot\Plugin {
-	const MESSAGE_SECONDS = 5;
-	const MESSAGE_BATCH = 3;
-	const MESSAGE_HOURS = 2;
-	const MESSAGE_MAXLEN = 255;
-
 	private $_lastTime;
 
 	public function __construct($bot) {
@@ -20,13 +15,13 @@ class MsgQueue extends \Brobot\Plugin {
 	public function execute() {
 		$bot = $this->_bot;
 		$now = $this->getCurrentTime();
-		if ($this->_lastTime > ($now - self::MESSAGE_SECONDS)) {
+		if ($this->_lastTime > ($now - $this->getOption('batch_seconds'))) {
 			return;
 		}
 		$this->_lastTime = $now;
 		$msgs = $this->getMessages();
 		foreach ($msgs as $m) {
-			$message = substr(str_replace("\n",' ',$m['command']),0,self::MESSAGE_MAXLEN);
+			$message = substr(str_replace("\n",' ',$m['command']),0,$this->getOption('command_max_len'));
 			$bot->send($message);
 		}
 		$this->setSent($msgs);
@@ -38,8 +33,8 @@ class MsgQueue extends \Brobot\Plugin {
 			$query = "
 				select *
 				from botCmdQueue
-				where commandDate > CURRENT_TIMESTAMP - interval ".self::MESSAGE_HOURS." hour
-				order by commandDate limit ".self::MESSAGE_BATCH
+				where commandDate > CURRENT_TIMESTAMP - interval ".$this->getOption('minutes_back')." minute
+				order by commandDate limit ".$this->getOption('batch_size')
 				;
 			$result = $db->query($query);
 			if ($result) {

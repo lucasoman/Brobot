@@ -25,11 +25,11 @@ class Brobot {
 	protected $_irccommandDir;
 	protected $_commandChar;
 	protected $_logFile;
+	protected $_pluginConfig;
 
 	public function __construct($index=0) {
 		$this->_index = $index;
 		$this->_plugins = array();
-		$this->_handlers = array();
 
 		$this->loadConfig();
 		$this->loadAllPlugins();
@@ -48,6 +48,16 @@ class Brobot {
 
 		$this->_commandChar = $config['runtime']['command_char'];
 		$this->_logFile = $config['runtime']['log_file'];
+
+		$this->_pluginConfig = $config['plugins'];
+
+		foreach ($this->_plugins as $p) {
+			$pName = explode('\\',strtolower(get_class($p)));
+			$pName = $pName[count($pName) - 1];
+			if (isset($config['plugins'][$pName])) {
+				$p->setOptions($config['plugins'][$pName]);
+			}
+		}
 
 		Db::setConfig($config['database']);
 	}
@@ -73,7 +83,13 @@ class Brobot {
 		if (file_exists($classFile)) {
 			include_once($classFile);
 			if (class_exists($plugin)) {
-				$this->_plugins[] = new $plugin($this);
+				$p = new $plugin($this);
+				$pName = explode('\\',strtolower(get_class($p)));
+				$pName = $pName[count($pName) - 1];
+				if (isset($this->_pluginConfig[$pName])) {
+					$p->setOptions($this->_pluginConfig[$pName]);
+				}
+				$this->_plugins[] = $p;
 				return TRUE;
 			}
 		}
@@ -102,14 +118,6 @@ class Brobot {
 
 	public function queue($msg) {
 		Plugin\MsgQueue::queueMessage($msg);
-	}
-
-	public function sendMessage($message,$channel=null) {
-		if (empty($channel)) {
-			$channel = $this->getChannel();
-		}
-		$obj = new IrcCommand\IrcPrivmsg('#'.$channel,$message);
-		$this->queue((string)$obj);
 	}
 
 	public function sendPrivateMessage($message,$nick) {
