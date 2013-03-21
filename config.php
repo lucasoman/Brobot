@@ -10,7 +10,7 @@ return array(
 		'database'=> array(
 			'db_user'=>'',
 			'db_pass'=>'',
-			'db_ip'=>'',
+			'db_ip'=>'localhost',
 			'db_port'=>'3306',
 			'db_name'=>'',
 			),
@@ -34,11 +34,17 @@ return array(
 					'type'=>'command',
 					'match'=>'fistbump',
 					'response'=>'Yeah man.',
+					'except'=>array(
+						'#brobottest',
+						),
 					),
 				array(
 					'type'=>'command',
 					'match'=>'tea',
 					'response'=>'One lump or two?',
+					'only'=>array(
+						'#lounge',
+						),
 					),
 				),
 			),

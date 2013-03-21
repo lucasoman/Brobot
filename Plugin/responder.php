@@ -25,8 +25,15 @@ class Responder extends \Brobot\Plugin {
 					break;
 			}
 			if ($respond) {
-				$this->reply($message,$r['response']);
-				break;
+				if (isset($r['except']) && in_array($message->getDestination(),$r['except'])) {
+					$respond = FALSE;
+				}
+				if (isset($r['only']) && !in_array($message->getDestination(),$r['only'])) {
+					$respond = FALSE;
+				}
+				if ($respond) {
+					$this->reply($message,$r['response']);
+				}
 			}
 			$i++;
 		}
