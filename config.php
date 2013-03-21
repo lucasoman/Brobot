@@ -8,11 +8,11 @@ return array(
 			'log_file'=>'/tmp/brobot.log',
 			),
 		'database'=> array(
-			'db_user'=>'user',
-			'db_pass'=>'password',
-			'db_ip'=>'localhost',
+			'db_user'=>'',
+			'db_pass'=>'',
+			'db_ip'=>'',
 			'db_port'=>'3306',
-			'db_name'=>'database',
+			'db_name'=>'',
 			),
 		'plugins'=> array(
 			'msgqueue'=> array(
@@ -23,6 +23,23 @@ return array(
 				),
 			'timeoutcheck'=> array(
 				'timeout'=>360,
+				),
+			'responder'=> array(
+				array(
+					'type'=>'has',
+					'match'=>'dude',
+					'response'=>'Dude.',
+					),
+				array(
+					'type'=>'command',
+					'match'=>'fistbump',
+					'response'=>'Yeah man.',
+					),
+				array(
+					'type'=>'command',
+					'match'=>'tea',
+					'response'=>'One lump or two?',
+					),
 				),
 			),
 		'servers'=> array(
