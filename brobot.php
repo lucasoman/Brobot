@@ -79,7 +79,7 @@ class Brobot {
 
 	public function addPlugin($plugin) {
 		$classFile = $this->_pluginDir.$plugin.'.php';
-		$plugin = 'Brobot\\Plugin\\'.$plugin;
+		$plugin = '\\Brobot\\Plugin\\'.$plugin;
 		if (file_exists($classFile)) {
 			include_once($classFile);
 			if (class_exists($plugin)) {
