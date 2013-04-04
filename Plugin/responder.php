@@ -32,7 +32,13 @@ class Responder extends \Brobot\Plugin {
 					$respond = FALSE;
 				}
 				if ($respond) {
-					$this->reply($message,$r['response']);
+					if (is_callable($r['response'])) {
+						$response = $r['response'];
+						$response = $response($message);
+					} else {
+						$response = $r['response'];
+					}
+					$this->reply($message,$response);
 				}
 			}
 			$i++;
