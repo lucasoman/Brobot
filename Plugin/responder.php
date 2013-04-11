@@ -14,7 +14,7 @@ class Responder extends \Brobot\Plugin {
 					}
 					break;
 				case 'has':
-					if (strstr($message->getMessage(),$r['match']) !== FALSE) {
+					if (stristr($message->getMessage(),$r['match']) !== FALSE) {
 						$respond = TRUE;
 					}
 					break;
