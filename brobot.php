@@ -177,7 +177,7 @@ class Brobot {
 	protected function loadAll($dir,$callBack=NULL) {
 		$d = dir($dir);
 		while ($file = $d->read()) {
-			if (is_file($dir.$file)) {
+			if (is_file($dir.$file) && preg_match("/\.php$/", $file) ) {
 				require_once($dir.$file);
 				$classname = preg_replace('/\.php$/','',$file);
 				if (!is_null($callBack)) {
